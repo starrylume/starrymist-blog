@@ -1,0 +1,117 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import { categories } from "../../data/categories";
+
+export async function getStaticPaths() {
+    const posts = await getCollection("posts", ({ data }) => {
+        return !data.draft;
+    });
+
+    return Object.entries(categories).map(([id, category]) => ({
+        params: {
+            category: id,
+        },
+        props: {
+            category,
+            posts: posts
+                .filter((post) => post.data.category === id)
+                .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()),
+        },
+    }));
+}
+
+const { category, posts } = Astro.props;
+---
+
+<Layout
+    title={`${category.name} · Starrylume`}
+    description={category.description}
+>
+    <main class="category-page">
+        <header class="category-header">
+            <h1>{category.name}</h1>
+            <p>{category.description}</p>
+        </header>
+
+        <div class="posts-list">
+            {posts.map((post) => (
+                <a class="posts-item" href={`/posts/${post.id}/`}>
+                    <time datetime={post.data.date.toISOString()}>
+                        {post.data.date.toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                        })}
+                    </time>
+
+                    <div class="posts-info">
+                        <h2>{post.data.title}</h2>
+                        <p>{post.data.description}</p>
+                    </div>
+                </a>
+            ))}
+        </div>
+    </main>
+</Layout>
+
+<style>
+    .category-page {
+        position: relative;
+        z-index: 1;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: var(--space-3xl) var(--space-xl);
+    }
+
+    .category-header {
+        margin-bottom: var(--space-3xl);
+    }
+
+    .category-header h1 {
+        margin: 0 0 var(--space-sm);
+        font-size: 2.5rem;
+        font-weight: 500;
+    }
+
+    .category-header p {
+        margin: 0;
+        color: var(--text-muted);
+    }
+
+    .posts-list {
+        border-top: 1px solid var(--line);
+    }
+
+    .posts-item {
+        display: grid;
+        grid-template-columns: 130px 1fr;
+        gap: var(--space-xl);
+        padding: var(--space-lg) 0;
+        color: var(--text);
+        text-decoration: none;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .posts-item time {
+        color: var(--text-faint);
+        font-size: var(--text-sm);
+    }
+
+    .posts-info h2 {
+        margin: 0 0 var(--space-xs);
+        font-size: var(--text-lg);
+        font-weight: 500;
+    }
+
+    .posts-info p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: var(--text-sm);
+        line-height: 1.6;
+    }
+
+    .posts-item:hover .posts-info h2 {
+        color: var(--firefly);
+    }
+</style>

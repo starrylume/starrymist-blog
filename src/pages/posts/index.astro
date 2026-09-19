@@ -1,0 +1,101 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("posts", ({ data }) => {
+    return !data.draft;
+}))
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<Layout
+    title="Posts · Starrylume"
+    description="All writing on Starrymist."
+>
+    <main class="posts-page">
+        <header class="posts-header">
+            <h1>Posts</h1>
+            <p>Thoughts, notes, and things worth sharing.</p>
+        </header>
+
+        <div class="posts-list">
+            {posts.map((post) => (
+                <a class="posts-item" href={`/posts/${post.id}/`}>
+                    <time datetime={post.data.date.toISOString()}>
+                        {post.data.date.toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                        })}
+                    </time>
+
+                    <div class="posts-info">
+                        <h2>{post.data.title}</h2>
+                        <p>{post.data.description}</p>
+                    </div>
+                </a>
+            ))}
+        </div>
+    </main>
+</Layout>
+
+<style>
+    .posts-page {
+        position: relative;
+        z-index: 1;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: var(--space-3xl) var(--space-xl);
+    }
+
+    .posts-header {
+        margin-bottom: var(--space-3xl);
+    }
+
+    .posts-header h1 {
+        margin: 0 0 var(--space-sm);
+        font-size: 2.5rem;
+        font-weight: 500;
+    }
+
+    .posts-header p {
+        margin: 0;
+        color: var(--text-muted);
+    }
+
+    .posts-list {
+        border-top: 1px solid var(--line);
+    }
+
+    .posts-item {
+        display: grid;
+        grid-template-columns: 130px 1fr;
+        gap: var(--space-xl);
+        padding: var(--space-lg) 0;
+        color: var(--text);
+        text-decoration: none;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .posts-item time {
+        color: var(--text-faint);
+        font-size: var(--text-sm);
+    }
+
+    .posts-info h2 {
+        margin: 0 0 var(--space-xs);
+        font-size: var(--text-lg);
+        font-weight: 500;
+    }
+
+    .posts-info p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: var(--text-sm);
+        line-height: 1.6;
+    }
+
+    .posts-item:hover .posts-info h2 {
+        color: var(--firefly);
+    }
+</style>

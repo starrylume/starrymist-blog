@@ -1,0 +1,120 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("posts", ({ data }) => {
+    return !data.draft;
+}))
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const years = [...new Set(
+    posts.map((post) => post.data.date.getFullYear())
+)];
+
+const archive = years.map((year) => ({
+    year,
+    posts: posts.filter(
+        (post) => post.data.date.getFullYear() === year
+    ),
+}));
+---
+
+<Layout
+    title="Archive · Starrylume"
+    description="All writing on Starrymist, in chronological order."
+>
+    <main class="archive-page">
+        <header class="archive-header">
+            <h1>Archive</h1>
+            <p>All writing, in chronological order.</p>
+        </header>
+
+        <div class="archive">
+            {archive.map((group) => (
+                <section class="archive-year">
+                    <h2>{group.year}</h2>
+
+                    <div class="archive-list">
+                        {group.posts.map((post) => (
+                            <a
+                                class="archive-item"
+                                href={`/posts/${post.id}/`}
+                            >
+                                <time datetime={post.data.date.toISOString()}>
+                                    {post.data.date.toLocaleDateString("en-US", {
+                                        month: "short",
+                                        day: "numeric",
+                                    })}
+                                </time>
+
+                                <span>{post.data.title}</span>
+                            </a>
+                        ))}
+                    </div>
+                </section>
+            ))}
+        </div>
+    </main>
+</Layout>
+
+<style>
+    .archive-page {
+        position: relative;
+        z-index: 1;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: var(--space-3xl) var(--space-xl);
+    }
+
+    .archive-header {
+        margin-bottom: var(--space-3xl);
+    }
+
+    .archive-header h1 {
+        margin: 0 0 var(--space-sm);
+        font-size: 2.5rem;
+        font-weight: 500;
+    }
+
+    .archive-header p {
+        margin: 0;
+        color: var(--text-muted);
+    }
+
+    .archive-year {
+        margin-bottom: var(--space-3xl);
+    }
+
+    .archive-year h2 {
+        margin: 0 0 var(--space-md);
+        font-size: var(--text-xl);
+        font-weight: 500;
+    }
+
+    .archive-list {
+        border-top: 1px solid var(--line);
+    }
+
+    .archive-item {
+        display: grid;
+        grid-template-columns: 90px 1fr;
+        gap: var(--space-lg);
+        padding: var(--space-md) 0;
+        color: var(--text);
+        text-decoration: none;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .archive-item time {
+        color: var(--text-faint);
+        font-size: var(--text-sm);
+    }
+
+    .archive-item span {
+        font-size: var(--text-base);
+    }
+
+    .archive-item:hover span {
+        color: var(--firefly);
+    }
+</style>

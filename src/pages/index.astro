@@ -1,11 +1,292 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
 
+import Layout from "../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("posts", ({ data }) => {
+    return !data.draft;
+}))
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+    .slice(0, 3);
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
+
+
+
 <Layout>
-	<Welcome />
+        <main>
+            <svg class="hero-art" viewBox="0 0 160 100">
+                <defs>
+                    <filter
+                        id="firefly-core"
+                        x="-300%"
+                        y="-300%"
+                        width="700%"
+                        height="700%"
+                    >
+                        <feGaussianBlur stdDeviation="0.12" />
+                    </filter>
+                    <filter
+                        id="firefly-halo"
+                        x="-500%"
+                        y="-500%"
+                        width="1100%"
+                        height="1100%"
+                    >
+                        <feGaussianBlur stdDeviation="0.7" />
+                    </filter>
+                    <filter
+                        id="stelle-core"
+                        x="-300%"
+                        y="-300%"
+                        width="700%"
+                        height="700%"
+                    >
+                        <feGaussianBlur stdDeviation="0.15" />
+                    </filter>
+                    <filter
+                        id="stelle-halo"
+                        x="-500%"
+                        y="-500%"
+                        width="1100%"
+                        height="1100%"
+                    >
+                        <feGaussianBlur stdDeviation="0.82" />
+                    </filter>
+                    <filter
+                        id="background-star"
+                        x="-400%"
+                        y="-400%"
+                        width="900%"
+                        height="900%"
+                    >
+                        <feGaussianBlur stdDeviation="0.08" />
+                    </filter>
+
+                </defs>
+                <circle class="firefly-halo" cx="25" cy="28" r="0.35" fill="var(--firefly)" opacity="0.22" filter="url(#firefly-halo)" />
+                <circle class="firefly-core" cx="25" cy="28" r="0.27" fill="var(--firefly-core)" opacity="0.72" filter="url(#firefly-core)" />
+
+                <circle class="stelle-halo" cx="51" cy="42" r="0.53" fill="var(--stelle)" opacity="0.20" filter="url(#stelle-halo)" />
+                <circle class="stelle-core" cx="51" cy="42" r="0.41" fill="var(--stelle-core)" opacity="0.72" filter="url(#stelle-core)" />
+                <!-- background stars -->
+            </svg>
+            <section class="intro">
+                <h1>Theme</h1>
+
+                <p>
+                    A short description.
+                </p>
+            </section>
+
+            <section class="latest">
+                <h2>Latest writing</h2>
+
+                <div class="post-list">
+                    {posts.map((post) => (
+                        <a class="post-item" href={`/posts/${post.id}/`}>
+                            <time class="post-date" datetime={post.data.date.toISOString()}>
+                                {post.data.date.toLocaleDateString("en-US", {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                })}
+                            </time>
+
+                            <span class="post-title">{post.data.title}</span>
+                        </a>
+                    ))}
+                </div>
+                <a class="view-all" href="/posts/">
+                    View all →
+                </a>
+            </section>
+        </main>
 </Layout>
+<style>
+    main{
+        position: relative;
+
+        max-width: 1100px;
+        min-height: calc(100vh - 100px);
+        margin: 0 auto;
+        padding: var(--space-2xl) var(--space-xl) var(--space-3xl);
+        box-sizing: border-box;
+
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto 1fr auto;
+    }
+
+    main{
+        position: relative;
+        z-index: 1;
+    }
+
+    h1{
+        font-size: var(--text-display);
+        font-weight: 500;
+        line-height: 1.1;
+        margin: 0;
+    }
+
+    .tagline{
+        margin: var(--space-md) 0 var(--space-xl);
+        font-size: var(--text-lg);
+        color: var(--text-muted);
+    }
+
+    .intro{
+        grid-column: 2;
+        align-self: start;
+        grid-row: 1;
+
+        max-width: 36rem;
+    }
+
+    .latest{
+        grid-column: 1;
+        align-self: end;
+        grid-row: 3;
+    }
+
+    .latest h2{
+        margin: 0 0 1.25rem;
+        font-size: var(--text-xl);
+        font-weight: 500;
+    }
+
+    .intro,
+    .latest{
+        position: relative;
+        z-index: 1;
+    }
+
+    .post-list{
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+    }
+
+    .post-item{
+        display: grid;
+        grid-template-columns: 5rem 1fr;
+        gap: 1.25rem;
+
+        padding: 0.8rem 0;
+
+        color: var(--text);
+        text-decoration: none;
+
+        border-top: 1px solid var(--line);
+    }
+
+    .post-item:last-child {
+        border-bottom: 1px solid var(--line);
+    }
+
+    .post-date{
+        color: var(--text-faint);
+        font-size: var(--text-sm);
+    }
+
+    .post-item:hover .post-title{
+        text-decoration: underline;
+        text-underline-offset: 0.25rem;
+    }
+
+    .post-title {
+        font-size: var(--text-md);
+        line-height: 1.4;
+    }
+
+    .view-all{
+        display: inline-block;
+        margin-top: 1.25rem;
+
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        text-decoration: none;
+    }
+
+    .view-all:hover{
+        color: var(--text);
+    }
+
+    .hero-art{
+        position: absolute;
+
+        width: 100%;
+        height: 100%;
+
+        top: 0;
+        left: 0;
+
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    @media (max-width: 700px) {
+        main {
+            display: block;
+            min-height: auto;
+            padding: calc(35svh + var(--space-xl)) 1.25rem var(--space-3xl);
+        }
+
+        .hero-art {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 35svh;
+        }
+
+        .intro {
+            margin: 0;
+        }
+
+        .intro h1 {
+            margin: 0;
+            font-size: 2.75rem;
+            line-height: 1.08;
+        }
+
+        .intro p {
+            margin-top: var(--space-lg);
+            line-height: 1.7;
+        }
+
+        .latest {
+            margin-top: 7rem;
+        }
+
+        .hero-art .firefly-halo {
+            cx: 62px;
+            cy: 34px;
+            r: 0.73px;
+        }
+
+        .hero-art .firefly-core {
+            cx: 62px;
+            cy: 34px;
+            r: 0.52px;
+        }
+
+        .hero-art .stelle-halo {
+            cx: 96px;
+            cy: 58px;
+            r: 0.93px;
+        }
+
+        .hero-art .stelle-core {
+            cx: 96px;
+            cy: 58px;
+            r: 0.68px;
+        }
+    }
+
+
+</style>
+
+

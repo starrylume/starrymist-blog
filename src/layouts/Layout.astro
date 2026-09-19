@@ -1,15 +1,176 @@
+---
+import { categories } from "../data/categories";
+import "@fontsource/nunito/400.css";
+import "@fontsource/nunito/500.css";
+import "@fontsource/nunito/600.css";
+import "@fontsource/jetbrains-mono/400.css";
+import "../styles/global.css";
+
+interface Props {
+    title?: string;
+    description?: string;
+    lang?: string;
+    type?: "website" | "article";
+}
+
+const {
+    title = "Starrylume",
+    description = "Thoughts on code, games, stories, and things worth sharing.",
+    lang = "en",
+    type = "website",
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+const categoryEntries = Object.entries(categories).sort(
+    ([, a], [, b]) => a.order - b.order
+);
+
+const featuredCategories = categoryEntries.filter(
+    ([, category]) => category.featured
+);
+
+const moreCategories = categoryEntries.filter(
+    ([, category]) => !category.featured
+);
+---
+
 <!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
+<html lang={lang}>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+
+        <script is:inline>
+            try {
+                const theme = localStorage.getItem("theme");
+
+                if (theme === "light") {
+                    document.documentElement.dataset.theme = "light";
+                }
+            } catch {}
+        </script>
+
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonicalURL} />
+
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:type" content={type} />
+        <meta property="og:url" content={canonicalURL} />
+        <meta property="og:site_name" content="Starrymist" />
+
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="generator" content={Astro.generator} />
+    </head>
+    <body>
+        <svg
+            class="star-field"
+            viewBox="0 0 160 100"
+            id="star-field"
+        >
+            <filter
+                id="background-star"
+                x="-400%"
+                y="-400%"
+                width="900%"
+                height="900%"
+            >
+                <feGaussianBlur stdDeviation="0.08" />
+            </filter>
+        </svg>
+
+        <header class="site-header">
+            <nav>
+                <a class="site-name" href="/">
+                    <img src="/logo-dark.svg" alt="" />
+                    <span>Starrylume</span>
+                </a>
+
+                <div class="nav-links">
+                    {featuredCategories.map(([id, category], index) => (
+                        <a
+                            class={
+                                index === 0
+                                    ? "featured-category primary-category"
+                                    : "featured-category extra-category"
+                            }
+                            href={`/categories/${id}/`}
+                        >
+                            {category.name}
+                        </a>
+                    ))}
+
+                    <div class="more-menu">
+                        <button class="more-trigger" type="button">
+                            More
+                        </button>
+
+                        <div class="more-dropdown">
+                            <div class="mobile-more-categories">
+                                {featuredCategories.slice(1).map(([id, category]) => (
+                                    <a href={`/categories/${id}/`}>
+                                        {category.name}
+                                    </a>
+                                ))}
+                            </div>
+
+                            {moreCategories.map(([id, category]) => (
+                                <a href={`/categories/${id}/`}>
+                                    {category.name}
+                                </a>
+                            ))}
+
+                            <div class="dropdown-divider"></div>
+
+                            <a href="/categories/">All Categories</a>
+                            <a href="/posts/">All Posts</a>
+                            <a href="/archive/">Archive</a>
+                            <a href="/about/">About</a>
+                        </div>
+                    </div>
+                    <button
+                        class="theme-toggle"
+                        type="button"
+                        aria-label="Switch to light theme"
+                        title="Switch to light theme"
+                    >
+                        <svg
+                            class="theme-icon theme-icon-sun"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <circle cx="12" cy="12" r="4"></circle>
+                            <path d="M12 2v2"></path>
+                            <path d="M12 20v2"></path>
+                            <path d="M4.93 4.93l1.42 1.42"></path>
+                            <path d="M17.66 17.66l1.41 1.41"></path>
+                            <path d="M2 12h2"></path>
+                            <path d="M20 12h2"></path>
+                            <path d="M4.93 19.07l1.42-1.42"></path>
+                            <path d="M17.66 6.34l1.41-1.41"></path>
+                        </svg>
+
+                        <svg
+                            class="theme-icon theme-icon-moon"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </nav>
+        </header>
+        <slot />
+        <footer class="site-footer">
+            <p>© 2026 Starrylume.</p>
+        </footer>
 	</body>
 </html>
 
@@ -19,5 +180,103 @@
 		margin: 0;
 		width: 100%;
 		height: 100%;
-	}
+    }
 </style>
+
+<script>
+    const svg = document.getElementById("star-field");
+
+    const starCount = 36;
+
+    function distance(x1, y1, x2, y2) {
+        return Math.hypot(x1 - x2, y1 - y2);
+    }
+
+    let created = 0;
+
+    while (created < starCount) {
+        const x = Math.random() * 160;
+        const y = Math.random() * 100;
+
+        if (
+            distance(x, y, 25, 28) < 11 ||
+            distance(x, y, 51, 42) < 11
+        ) {
+            continue;
+        }
+
+        const star = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "circle"
+        );
+
+        const type = Math.random();
+
+        let r;
+        let opacity;
+
+        if (type < 0.7) {
+            r = 0.07 + Math.random() * 0.04;
+            opacity = 0.10 + Math.random() * 0.10;
+        } else if (type < 0.95) {
+            r = 0.11 + Math.random() * 0.05;
+            opacity = 0.16 + Math.random() * 0.11;
+        } else {
+            r = 0.16 + Math.random() * 0.06;
+            opacity = 0.24 + Math.random() * 0.12;
+        }
+
+        if (type >= 0.95) {
+            star.setAttribute("filter", "url(#background-star)");
+        }
+
+        star.setAttribute("cx", x);
+        star.setAttribute("cy", y);
+        star.setAttribute("r", r);
+        star.setAttribute("fill", "var(--star)");
+        star.setAttribute("opacity", opacity);
+
+        svg.appendChild(star);
+
+        created++;
+    }
+</script>
+<script>
+    const themeToggle = document.querySelector(".theme-toggle");
+
+    function getCurrentTheme() {
+        return document.documentElement.dataset.theme === "light"
+            ? "light"
+            : "dark";
+    }
+
+    function updateThemeButton(theme) {
+        if (!(themeToggle instanceof HTMLButtonElement)) {
+            return;
+        }
+
+        const label =
+            theme === "light"
+                ? "Switch to dark theme"
+                : "Switch to light theme";
+
+        themeToggle.setAttribute("aria-label", label);
+        themeToggle.setAttribute("title", label);
+    }
+
+    updateThemeButton(getCurrentTheme());
+
+    themeToggle?.addEventListener("click", () => {
+        const currentTheme = getCurrentTheme();
+        const nextTheme = currentTheme === "light" ? "dark" : "light";
+
+        if (nextTheme === "light") {
+            document.documentElement.dataset.theme = "light";
+        } else {
+            delete document.documentElement.dataset.theme;
+        }
+
+        localStorage.setItem("theme", nextTheme);
+        updateThemeButton(nextTheme);
+    });
+</script>

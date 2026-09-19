@@ -1,0 +1,85 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout
+    title="About · Starrylume"
+    description="About Starrylume and Starrymist."
+>
+    <main class="about-page">
+        <header class="about-header">
+            <h1>About</h1>
+            <p>A little about me and this place.</p>
+        </header>
+
+        <div class="about-content">
+            <p>
+                I'm Starrylume.
+            </p>
+
+            <p>
+                An introduction about this website.
+                
+            </p>
+
+            <p>
+                You can find me on <span></span> 
+                <a
+                    href="https://github.com/starrylume"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    GitHub
+                </a>
+                <span></span> or reach me at <span></span>
+                <a href="mailto:contact@starrymist.me">
+                    contact@starrymist.me
+                </a>.
+            </p>
+        </div>
+    </main>
+</Layout>
+
+<style>
+    .about-page {
+        position: relative;
+        z-index: 1;
+        max-width: 760px;
+        margin: 0 auto;
+        padding: var(--space-3xl) var(--space-xl);
+    }
+
+    .about-header {
+        margin-bottom: var(--space-2xl);
+    }
+
+    .about-header h1 {
+        margin: 0 0 var(--space-sm);
+        font-size: 2.5rem;
+        font-weight: 500;
+    }
+
+    .about-header p {
+        margin: 0;
+        color: var(--text-muted);
+    }
+
+    .about-content {
+        color: var(--text);
+        line-height: 1.8;
+    }
+
+    .about-content p {
+        margin: 1.25rem 0;
+    }
+
+    .about-content a {
+        color: var(--firefly);
+        text-underline-offset: 0.25rem;
+    }
+
+    .about-content a:hover {
+        color: var(--text);
+        opacity: 1;
+    }
+</style>

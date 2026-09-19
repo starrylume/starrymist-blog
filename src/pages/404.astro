@@ -1,0 +1,91 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+    title="404 · Starrylume"
+    description="This page could not be found."
+>
+    <main class="not-found">
+        <div class="not-found-content">
+            <p class="error-code">404</p>
+
+            <h1>Lost among the stars.</h1>
+
+            <p class="error-description">
+                The page you're looking for doesn't seem to be here.
+            </p>
+
+            <div class="error-links">
+                <a href="/">Back home</a>
+                <a href="/posts/">All posts</a>
+            </div>
+        </div>
+    </main>
+</Layout>
+
+<style>
+    .not-found {
+        position: relative;
+        z-index: 1;
+        min-height: calc(100vh - 100px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-3xl) var(--space-xl);
+        box-sizing: border-box;
+    }
+
+    .not-found-content {
+        max-width: 620px;
+        text-align: center;
+    }
+
+    .error-code {
+        margin: 0 0 var(--space-md);
+        color: var(--firefly);
+        font-size: var(--text-sm);
+        letter-spacing: 0.15em;
+    }
+
+    .not-found h1 {
+        margin: 0;
+        font-size: 3rem;
+        font-weight: 500;
+        line-height: 1.15;
+    }
+
+    .error-description {
+        margin: var(--space-lg) 0 0;
+        color: var(--text-muted);
+        line-height: 1.7;
+    }
+
+    .error-links {
+        display: flex;
+        justify-content: center;
+        gap: var(--space-lg);
+        margin-top: var(--space-2xl);
+    }
+
+    .error-links a {
+        color: var(--text);
+        text-underline-offset: 0.25rem;
+    }
+
+    .error-links a:hover {
+        color: var(--firefly);
+        opacity: 1;
+    }
+
+    @media (max-width: 700px) {
+        .not-found {
+            min-height: calc(100svh - 80px);
+            padding: var(--space-3xl) 1.25rem;
+        }
+
+        .not-found h1 {
+            font-size: 2.4rem;
+        }
+    }
+</style>

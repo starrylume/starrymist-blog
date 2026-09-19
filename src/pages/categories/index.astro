@@ -1,0 +1,108 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import { categories } from "../../data/categories";
+
+const posts = await getCollection("posts", ({ data }) => {
+    return !data.draft;
+});
+
+const categoryList = Object.entries(categories).map(([id, category]) => ({
+    id,
+    ...category,
+    count: posts.filter((post) => post.data.category === id).length,
+}));
+---
+
+<Layout
+    title="Categories · Starrylume"
+    description="Browse writing by category."
+>
+    <main class="categories-page">
+        <header class="categories-header">
+            <h1>Categories</h1>
+            <p>Browse writing by topic.</p>
+        </header>
+
+        <div class="category-list">
+            {categoryList.map((category) => (
+                <a
+                    class="category-item"
+                    href={`/categories/${category.id}/`}
+                >
+                    <div>
+                        <h2>{category.name}</h2>
+                        <p>{category.description}</p>
+                    </div>
+
+                    <span>
+                        {category.count} {category.count === 1 ? "post" : "posts"}
+                    </span>
+                </a>
+            ))}
+        </div>
+    </main>
+</Layout>
+
+<style>
+    .categories-page {
+        position: relative;
+        z-index: 1;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: var(--space-3xl) var(--space-xl);
+    }
+
+    .categories-header {
+        margin-bottom: var(--space-3xl);
+    }
+
+    .categories-header h1 {
+        margin: 0 0 var(--space-sm);
+        font-size: 2.5rem;
+        font-weight: 500;
+    }
+
+    .categories-header p {
+        margin: 0;
+        color: var(--text-muted);
+    }
+
+    .category-list {
+        border-top: 1px solid var(--line);
+    }
+
+    .category-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--space-xl);
+        padding: var(--space-lg) 0;
+        color: var(--text);
+        text-decoration: none;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .category-item h2 {
+        margin: 0 0 var(--space-xs);
+        font-size: var(--text-lg);
+        font-weight: 500;
+    }
+
+    .category-item p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: var(--text-sm);
+        line-height: 1.6;
+    }
+
+    .category-item > span {
+        flex-shrink: 0;
+        color: var(--text-faint);
+        font-size: var(--text-sm);
+    }
+
+    .category-item:hover h2 {
+        color: var(--firefly);
+    }
+</style>
