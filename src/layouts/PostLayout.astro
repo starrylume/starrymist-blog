@@ -1,6 +1,7 @@
 ---
 import Layout from "./Layout.astro";
 import "katex/dist/katex.min.css";
+import { categories } from "../data/categories";
 
 
 interface Props {
@@ -16,9 +17,13 @@ const {
     title,
     description,
     date,
+    category,
     lang,
     tags,
 } = Astro.props;
+
+const categoryInfo = categories[category as keyof typeof categories];
+
 ---
 
 <Layout
@@ -32,16 +37,39 @@ const {
             <header class="post-header">
                 <h1>{title}</h1>
 
-                <time class="post-date" datetime={date.toISOString()}>
-                    {date.toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                    })}
-                </time>
+                <div class="post-meta">
+                    <time class="post-date" datetime={date.toISOString()}>
+                        {date.toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                        })}
+                    </time>
+
+                    <span aria-hidden="true">·</span>
+
+                    {
+                        categoryInfo ? (
+                            <a
+                                class="post-category"
+                                href={`/categories/${category}/`}
+                            >
+                                {categoryInfo.name}
+                            </a>
+                        ) : (
+                            <span>{category}</span>
+                        )
+                    }
+                </div>
 
                 <div class="post-tags">
-                    {tags.map((tag) => <span class="post-tag">{tag}</span>)}
+                    {
+                        tags.map((tag) => (
+                            <a class="post-tag" href={`/tags/${tag}/`}>
+                                {tag}
+                            </a>
+                        ))
+                    }
                 </div>
             </header>
 
@@ -164,10 +192,22 @@ const {
         border-radius: 0.4rem;
     }
 
-    .post-date {
-        display: block;
+    .post-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
         color: var(--text-faint);
         font-size: var(--text-sm);
+    }
+
+    .post-category {
+        color: var(--text-faint);
+        text-decoration: none;
+        transition: color 0.25s;
+    }
+
+    .post-category:hover {
+        color: var(--text);
     }
 
     .post-tags {
@@ -182,8 +222,13 @@ const {
         color: var(--firefly);
         font-size: 0.8rem;
         line-height: 1.4;
+        text-decoration: none;
         background: rgba(143, 216, 200, 0.06);
         border: 1px solid rgba(143, 216, 200, 0.16);
         border-radius: 999px;
+    }
+
+    .post-tag:hover {
+        border-color: var(--firefly);
     }
 </style>

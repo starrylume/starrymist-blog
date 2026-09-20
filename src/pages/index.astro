@@ -74,10 +74,13 @@ const posts = (await getCollection("posts", ({ data }) => {
                 <!-- background stars -->
             </svg>
             <section class="intro">
-                <h1>Theme</h1>
+                <h1>Hi! I'm Starrylume.</h1>
 
                 <p>
-                    A short description.
+                I write about code, science, games, and whatever else I happen to be working or thinking about. 
+                </p>
+                <p>
+                Some of it is carefully worked out. Some of it is just something I wanted to keep.
                 </p>
             </section>
 
@@ -144,6 +147,10 @@ const posts = (await getCollection("posts", ({ data }) => {
         grid-row: 1;
 
         max-width: 36rem;
+    }
+
+    .intro h1{
+        white-space: nowrap;
     }
 
     .latest{
@@ -250,6 +257,7 @@ const posts = (await getCollection("posts", ({ data }) => {
             margin: 0;
             font-size: 2.75rem;
             line-height: 1.08;
+            white-space: normal;
         }
 
         .intro p {

@@ -1,0 +1,91 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+const posts = await getCollection("posts", ({ data }) => {
+    return !data.draft;
+});
+
+const tagCounts = new Map<string, number>();
+
+for (const post of posts) {
+    for (const tag of post.data.tags) {
+        tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+    }
+}
+
+const tags = Array.from(tagCounts.entries())
+    .sort(([a], [b]) => a.localeCompare(b));
+---
+
+<Layout
+    title="Tags · Starrylume"
+    description="Browse writing by tag."
+>
+    <main class="tags-page">
+        <header class="tags-header">
+            <h1>Tags</h1>
+        </header>
+
+        <div class="tags-list">
+            {tags.map(([tag, count]) => (
+                <a class="tag-item" href={`/tags/${tag}/`}>
+                    <span>{tag}</span>
+                    <span class="tag-count">{count}</span>
+                </a>
+            ))}
+        </div>
+    </main>
+</Layout>
+
+<style>
+    .tags-page {
+        position: relative;
+        z-index: 1;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: var(--space-3xl) var(--space-xl);
+    }
+
+    .tags-header {
+        margin-bottom: var(--space-3xl);
+    }
+
+    .tags-header h1 {
+        margin: 0;
+        font-size: 2.5rem;
+        font-weight: 500;
+    }
+
+    .tags-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .tag-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 0.75rem;
+        color: var(--firefly);
+        text-decoration: none;
+        background: rgba(143, 216, 200, 0.06);
+        border: 1px solid rgba(143, 216, 200, 0.16);
+        border-radius: 999px;
+        transition:
+            color 0.25s,
+            border-color 0.25s,
+            background 0.25s;
+    }
+
+    .tag-item:hover {
+        color: var(--text);
+        border-color: var(--text-faint);
+    }
+
+    .tag-count {
+        color: var(--text-faint);
+        font-size: var(--text-sm);
+    }
+</style>
