@@ -374,6 +374,12 @@ nav a {
     margin: 0;
 }
 
+.featured-category.is-active,
+.more-trigger.is-active,
+.more-dropdown a.is-active {
+    color: var(--firefly);
+}
+
 .mobile-more-categories {
     display: none;
 }

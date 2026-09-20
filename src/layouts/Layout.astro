@@ -33,6 +33,21 @@ const featuredCategories = categoryEntries.filter(
 const moreCategories = categoryEntries.filter(
     ([, category]) => !category.featured
 );
+
+const pathname = Astro.url.pathname;
+
+const isCategoryActive = (id: string) =>
+    pathname === `/categories/${id}/`;
+
+const moreIsActive =
+    moreCategories.some(([id]) => isCategoryActive(id)) ||
+    pathname === "/categories/" ||
+    pathname.startsWith("/posts/") ||
+    pathname.startsWith("/tags/") ||
+    pathname === "/archive/" ||
+    pathname === "/about/";
+
+const currentYear = new Date().getFullYear();
 ---
 
 <!doctype html>
@@ -77,6 +92,15 @@ const moreCategories = categoryEntries.filter(
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
 
+        <meta
+            property="og:image:alt"
+            content="Starrymist sharing card"
+        />
+        <meta
+            name="twitter:image:alt"
+            content="Starrymist sharing card"
+        />
+
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="generator" content={Astro.generator} />
     </head>
@@ -107,11 +131,13 @@ const moreCategories = categoryEntries.filter(
                 <div class="nav-links">
                     {featuredCategories.map(([id, category], index) => (
                         <a
-                            class={
+                            class:list={[
+                                "featured-category",
                                 index === 0
-                                    ? "featured-category primary-category"
-                                    : "featured-category extra-category"
-                            }
+                                    ? "primary-category"
+                                    : "extra-category",
+                                isCategoryActive(id) && "is-active",
+                            ]}
                             href={`/categories/${id}/`}
                         >
                             {category.name}
@@ -119,31 +145,70 @@ const moreCategories = categoryEntries.filter(
                     ))}
 
                     <div class="more-menu">
-                        <button class="more-trigger" type="button">
+                        <button
+                            class:list={[
+                                "more-trigger",
+                                moreIsActive && "is-active",
+                            ]}
+                            type="button"
+                        >
                             More
                         </button>
 
                         <div class="more-dropdown">
                             <div class="mobile-more-categories">
                                 {featuredCategories.slice(1).map(([id, category]) => (
-                                    <a href={`/categories/${id}/`}>
+                                    <a
+                                        class:list={{
+                                            "is-active": isCategoryActive(id),
+                                        }}
+                                        href={`/categories/${id}/`}
+                                    >
                                         {category.name}
                                     </a>
                                 ))}
                             </div>
 
                             {moreCategories.map(([id, category]) => (
-                                <a href={`/categories/${id}/`}>
+                                <a
+                                    class:list={{
+                                        "is-active": isCategoryActive(id),
+                                    }}
+                                    href={`/categories/${id}/`}
+                                >
                                     {category.name}
                                 </a>
                             ))}
 
                             <div class="dropdown-divider"></div>
 
-                            <a href="/categories/">All Categories</a>
-                            <a href="/posts/">All Posts</a>
-                            <a href="/archive/">Archive</a>
-                            <a href="/about/">About</a>
+                            <a
+                                class:list={{ "is-active": pathname === "/categories/" }}
+                                href="/categories/"
+                            >
+                                All Categories
+                            </a>
+
+                            <a
+                                class:list={{ "is-active": pathname.startsWith("/posts/") }}
+                                href="/posts/"
+                            >
+                                All Posts
+                            </a>
+
+                            <a
+                                class:list={{ "is-active": pathname === "/archive/" }}
+                                href="/archive/"
+                            >
+                                Archive
+                            </a>
+
+                            <a
+                                class:list={{ "is-active": pathname === "/about/" }}
+                                href="/about/"
+                            >
+                                About
+                            </a>
                         </div>
                     </div>
                     <button
@@ -181,7 +246,7 @@ const moreCategories = categoryEntries.filter(
         </header>
         <slot />
         <footer class="site-footer">
-            <p>© 2026 Starrylume.</p>
+            <p>© {currentYear} Starrylume.</p>
         </footer>
 	</body>
 </html>
