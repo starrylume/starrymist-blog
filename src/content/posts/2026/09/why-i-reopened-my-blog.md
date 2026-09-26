@@ -5,7 +5,7 @@ date: 2026-09-21
 category: "personal"
 tags:
   - thoughts
-lang: "zh-CN"
+lang: "en"
 draft: false
 ---
 

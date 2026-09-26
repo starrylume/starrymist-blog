@@ -8,7 +8,7 @@ export const categories = {
 
     games: {
         name: "Games",
-        description: "Under development.",
+        description: "Thoughts and experiences about games.",
         featured: true,
         order: 2,
     },
